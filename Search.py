@@ -30,7 +30,7 @@ def calculateValues(board = currentBoard):
     global totalValues
     for island in board.islands:
         totalValues = totalValues + island.weight
-    
+
 # checkRow and Col can return a list of the cells to be turned into bridges.
 # This makes it easy to make bridges along the path that we already iterate across.
 def checkRow(row, ay, by, aLoc, bLoc, board = currentBoard):
@@ -68,24 +68,28 @@ def checkCol(col, ax, bx, aLoc, bLoc, board = currentBoard):
         return toBeBridges
 
 def populateAdjacent(nodeA, board = currentBoard):
-    ax = nodeA.location[0]
-    ay = nodeA.location[1]
-    for i in range(0,ax):
-        cCell = board.grid[i][ay]
-        if cCell.family == 1 and not cCell.checkFull():
-            nodeA.adjacentIslands.append(cCell)
-    for i in range(ax+1,n):
-        cCell = board.grid[i][ay]
-        if cCell.family == 1 and not cCell.checkFull():
-            nodeA.adjacentIslands.append(cCell)
-    for i in range(0,ay):
-        cCell = board.grid[ax][i]
-        if cCell.family == 1 and not cCell.checkFull():
-            nodeA.adjacentIslands.append(cCell)
-    for i in range(ay+1,n):
-        cCell = board.grid[ax][i]
-        if cCell.family == 1 and not cCell.checkFull():
-            nodeA.adjacentIslands.append(cCell)
+        ax = nodeA.location[0]
+        ay = nodeA.location[1]
+        for x in range(ax-1,-1,-1):
+            cCell = board.grid[x][ay]
+            if cCell.family == 1 and not cCell.checkFull():
+                nodeA.adjacentIslands.add(cCell)
+                break
+        for x in range(ax+1,n):
+            cCell = board.grid[x][ay]
+            if cCell.family == 1 and not cCell.checkFull():
+                nodeA.adjacentIslands.add(cCell)
+                break
+        for y in range(ay-1,-1,-1):
+            cCell = board.grid[ax][y]
+            if cCell.family == 1 and not cCell.checkFull():
+                nodeA.adjacentIslands.add(cCell)
+                break
+        for y in range(ay+1,n):
+            cCell = board.grid[ax][y]
+            if cCell.family == 1 and not cCell.checkFull():
+                nodeA.adjacentIslands.add(cCell)
+                break
 
 
 def checkAdjacent(nodeA, nodeB, board = currentBoard):
@@ -116,7 +120,8 @@ def connect(nodeA, nodeB, board = currentBoard):
     adjacent = checkAdjacent(nodeA, nodeB, board)
     full = checkFullPair(nodeA, nodeB)
     fullTest = full
-    if adjacent and not full:
+    # print(fullTest)
+    if adjacent and (not full):
         # Actually connect
         for cell in adjacent:
             if (cell.bridges < 2 and cell.bridges >= 0) and (cell.family == 0 or cell.family == -1):
@@ -128,7 +133,6 @@ def connect(nodeA, nodeB, board = currentBoard):
         nodeB.connectedIslands.append(nodeA)
 
 def calculateHeuristic(board = currentBoard):
-    calculateValues(board)
     totalBridges = 0
     for island in board.islands:
         totalBridges = totalBridges + island.connectedBridges
@@ -139,13 +143,15 @@ def calculateHeuristic(board = currentBoard):
 def generateMoves(board = currentBoard):
     moves = set()
     for island in board.islands:
-        full = island.checkFull()
-        if not full:
-            populateAdjacent(island, board)
-            for adj in island.adjacentIslands:
-                if not adj.checkFull():
-                    moves.add(frozenset([island, adj]))
-    print("Moves", len(moves))
+        populateAdjacent(island, board)
+        print("Num adj: ", len(island.adjacentIslands))
+    # print(island.weight - island.connectedBridges)
+
+    # for adj in island.adjacentIslands:
+    #     if not checkFullPair(island, adj):
+    #         print(island.location, adj.location)
+    #         moves.add(frozenset([island,adj]))
+    print("Number of moves:", len(moves))
     return moves
 
 def makeChildren(board = currentBoard):
@@ -154,7 +160,7 @@ def makeChildren(board = currentBoard):
         mList = list(move)
         connect(mList.pop(), mList.pop(), boardCopy)
         boardCopy.heuristic = calculateHeuristic(boardCopy)
-        frontier.append(board)
+        frontier.append(boardCopy)
 
 def finished(board = currentBoard):
     bridges = 0
@@ -173,12 +179,13 @@ def search(runs):
         else:
             if (i % 10) == 0:
                 print("Still working!")
-                print(fullTest)
             makeChildren(currentBoard)
             frontier.sort(key=lambda x: x.heuristic)
             currentBoard = frontier[0]
 
 initialize()
-search(10)
-printIslands(frontier[0])
-print(frontier[0].heuristic)
+calculateValues(frontier[0])
+# printIslands(frontier[0])
+search(1)
+# printIslands(frontier[0])
+# print(frontier[0].heuristic)

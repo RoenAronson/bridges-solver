@@ -4,7 +4,7 @@ class node:
     # necessary properties of the puzzle
     types = [-1, 0, 1]
     connectedIslands = []
-    adjacentIslands = []
+    adjacentIslands = set()
     connectedBridges = 0
     # For islands, weight is the value
     weight = 0
@@ -31,5 +31,8 @@ class node:
             self.weight = 0
             self.typeString = "empty"
 
+
+
     def checkFull(self):
-        return 0 >= self.weight - self.connectedBridges
+        # Returns True if full
+        return((self.weight - self.connectedBridges) <= 0)
