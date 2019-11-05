@@ -68,29 +68,31 @@ def checkCol(col, ax, bx, aLoc, bLoc, board = currentBoard):
         return toBeBridges
 
 def populateAdjacent(nodeA, board = currentBoard):
-        ax = nodeA.location[0]
-        ay = nodeA.location[1]
-        for x in range(ax-1,-1,-1):
-            cCell = board.grid[x][ay]
-            if cCell.family == 1 and not cCell.checkFull():
-                nodeA.adjacentIslands.add(cCell)
-                break
-        for x in range(ax+1,n):
-            cCell = board.grid[x][ay]
-            if cCell.family == 1 and not cCell.checkFull():
-                nodeA.adjacentIslands.add(cCell)
-                break
-        for y in range(ay-1,-1,-1):
-            cCell = board.grid[ax][y]
-            if cCell.family == 1 and not cCell.checkFull():
-                nodeA.adjacentIslands.add(cCell)
-                break
-        for y in range(ay+1,n):
-            cCell = board.grid[ax][y]
-            if cCell.family == 1 and not cCell.checkFull():
-                nodeA.adjacentIslands.add(cCell)
-                break
-
+    ax = nodeA.location[0]
+    ay = nodeA.location[1]
+    adjacents = []
+    for x in range(ax-1,-1,-1):
+        cCell = board.grid[x][ay]
+        if cCell.family == 1 and not cCell.checkFull():
+            adjacents.append(cCell)
+            break
+    for x in range(ax+1,n):
+        cCell = board.grid[x][ay]
+        if cCell.family == 1 and not cCell.checkFull():
+            adjacents.append(cCell)
+            break
+    for y in range(ay-1,-1,-1):
+        cCell = board.grid[ax][y]
+        if cCell.family == 1 and not cCell.checkFull():
+            adjacents.append(cCell)
+            break
+    for y in range(ay+1,n):
+        cCell = board.grid[ax][y]
+        if cCell.family == 1 and not cCell.checkFull():
+            adjacents.append(cCell)
+            break
+    return adjacents
+        
 
 def checkAdjacent(nodeA, nodeB, board = currentBoard):
     aLoc = nodeA.location
@@ -142,9 +144,10 @@ def calculateHeuristic(board = currentBoard):
 # This means only adjacent nodes that aren't full
 def generateMoves(board = currentBoard):
     moves = set()
+    adj = []
     for island in board.islands:
-        populateAdjacent(island, board)
-        print("Num adj: ", len(island.adjacentIslands))
+        adj = (populateAdjacent(island, board))
+        print(len(adj))
     # print(island.weight - island.connectedBridges)
 
     # for adj in island.adjacentIslands:
@@ -189,3 +192,5 @@ calculateValues(frontier[0])
 search(1)
 # printIslands(frontier[0])
 # print(frontier[0].heuristic)
+for island in frontier[0].islands:
+    print(len(island.adjacentIslands))
