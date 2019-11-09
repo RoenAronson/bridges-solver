@@ -5,7 +5,7 @@ import copy
 
 n = problem1.boardSize
 
-currentBoard = board(n,0,0)
+currentBoard = board(n,0)
 
 frontier = []
 
@@ -100,7 +100,7 @@ def populateAdjacent(nodeA, board):
                     adjacents.append(island)
             break
     return adjacents
-        
+
 
 def checkAdjacent(nodeA, nodeB, board):
     aLoc = nodeA.location
@@ -114,7 +114,7 @@ def checkAdjacent(nodeA, nodeB, board):
         return(checkRow(ax, ay, by, aLoc, bLoc, board))
     # Same Row
     if ay == by:
-        return(checkCol(ay, ax, bx, aLoc, bLoc, board))       
+        return(checkCol(ay, ax, bx, aLoc, bLoc, board))
 
 def checkFullPair(nodeA, nodeB):
     a = nodeA
