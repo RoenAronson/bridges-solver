@@ -20,7 +20,7 @@ class node:
 
 
     adjacentIslands = set()
-    connectedIslands = []
+    connectedIslands = set()
     connectedBridges = 0
 
     # For islands, weight is the value
