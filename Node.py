@@ -26,8 +26,7 @@ class node:
     weight = 0
     # For bridges, bridges is the value
     bridges = 0
-    location = []  # Column, row of the node
-    isFull = False  #
+    location = []     # List of the node's coordinates (column, row)
 
     def __init__ (self, newType, location = [], weight = 0):
 
