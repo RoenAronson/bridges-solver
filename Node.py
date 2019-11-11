@@ -3,17 +3,15 @@ class node:
     # A node is a gridsquare that keeps track of many of the
     # necessary properties of the puzzle
     types = [-1, 0, 1]
-    connectedIslands = []
+    connectedIslands = set()
     adjacentIslands = set()
     connectedBridges = 0
     # For islands, weight is the value
     weight = 0
     # For bridges, bridges is the value
     bridges = 0
-    typeString = ""
     family = -1
     location = []
-    isFull = False
     def __init__ (self, newType, location = [], weight = 0):
         self.location = location
         self.family = newType

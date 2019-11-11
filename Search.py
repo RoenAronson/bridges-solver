@@ -123,24 +123,19 @@ def checkFullPair(nodeA, nodeB):
     bFull = nodeB.checkFull()
     return aFull and bFull
 
-fullTest = True
-
 def connect(nodeA, nodeB, board):
-    global fullTest
-    adjacent = checkAdjacent(nodeA, nodeB, board)
+    toBeBridges = checkAdjacent(nodeA, nodeB, board)
     full = checkFullPair(nodeA, nodeB)
-    fullTest = full
-    # print(fullTest)
-    if adjacent and (not full):
+    if toBeBridges and not full:
         # Actually connect
-        for cell in adjacent:
-            if (cell.bridges < 2 and cell.bridges >= 0) and (cell.family == 0 or cell.family == -1):
+        for cell in toBeBridges:
+            if (cell.bridges < 2 and cell.bridges >= 0) and not cell.family == 1:
                 cell.family = 0
                 cell.bridges = cell.bridges + 1
         nodeA.connectedBridges = nodeA.connectedBridges + 1
         nodeB.connectedBridges = nodeB.connectedBridges + 1
-        nodeA.connectedIslands.append(nodeB)
-        nodeB.connectedIslands.append(nodeA)
+        nodeA.connectedIslands.add(nodeB)
+        nodeB.connectedIslands.add(nodeA)
 
 def calculateHeuristic(board):
     totalBridges = 0
@@ -157,18 +152,26 @@ def generateMoves(board):
         adj = (populateAdjacent(island, board))
         print(len(adj))
         for x in adj:
-            if not checkFullPair(island, x) and x in board.islands:
+            print(checkFullPair(island, x))
+            if not checkFullPair(island, x):
                 a = (island,x)
                 moves.add((frozenset(a)))
     print("Number of moves:", len(moves))
     return moves
 
 def makeChildren(board):
-    boardCopy = copy.deepcopy(board)
-    for move in (generateMoves(boardCopy)):
+    for move in (generateMoves(board)):
+        boardCopy = copy.deepcopy(board)
         mList = list(move)
-        print(mList[0].location, mList[1].location)
-        connect(mList.pop(), mList.pop(), boardCopy)
+        print(mList)
+        a = mList.pop()
+        b = mList.pop()
+        for island in boardCopy.islands:
+            if island.location == a.location:
+                a = island
+            if island.location ==  b.location:
+                b = island
+        connect(a, b, boardCopy)
         boardCopy.heuristic = calculateHeuristic(boardCopy)
         frontier.append(boardCopy)
 
@@ -195,8 +198,13 @@ def search(runs):
 
 initialize()
 calculateValues(frontier[0])
+# frontier[0].heuristic = calculateHeuristic(frontier[0])
 # printIslands(frontier[0])
 search(1)
+# print(len(frontier[0].islands.pop().connectedIslands))
 # printIslands(frontier[0])
-# print(frontier[0].heuristic)
 
+for x in frontier[0].islands:
+    for y in frontier[1].islands:
+        if x == y:
+            print(x.location, y.location)
