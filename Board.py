@@ -20,7 +20,7 @@ class board:
     islands = set()
     heuristic = 0
 
-    # Initializing a boardonly populates it with empty nodes and gives it a
+    # Initializing a board only populates it with empty nodes and gives it a
     # heuristic. Adding the actual islands/connections is done elsewhere.
     def __init__ (self, size, heuristic):
         initGrid = []
@@ -30,3 +30,7 @@ class board:
             for j in range(0, size):
                 initGrid[i].append(node(-1,[i,j]))
         self.grid = initGrid.copy()
+
+    def printIslands(self):
+        for island in islands:
+            print(island.location, island.weight - island.connectedBridges )

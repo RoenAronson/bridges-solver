@@ -3,25 +3,38 @@ from Problem import problem1
 from Node import *
 import copy
 
+# After importing board, we receive pre-defined problem1.
+# We get the boardsize, and create a board with it.
 n = problem1.boardSize
-
 currentBoard = board(n,0)
 
+# The frontier is initially empty and total values is 0
 frontier = []
-
 totalValues = 0
 
+# The first function that is run.
 def initialize():
     global currentBoard
-    initialBoard = board(n, 0, 0)
+
+    # Create an 'initial board'
+    initialBoard = board(n, 0)
+
+    # For each island in the problem:
+        # Get the coords
+        # Find coords on the grid, and set equal to that island
+        # Add that island to the grid's island list
     for island in problem1.islands:
         x = island.location[0]
         y = island.location[1]
         initialBoard.grid[x][y] = island
         initialBoard.islands.add(island)
+
+    # Now set the global currentBoard to a DEEPCOPY of initialBoard
+    # and add the currentBoard to the frontier.
     currentBoard = copy.deepcopy(initialBoard)
     frontier.append(currentBoard)
 
+# Prints all islands
 def printIslands(board):
     for island in board.islands:
         print(island.location, island.weight-island.connectedBridges)
@@ -172,6 +185,7 @@ def makeChildren(board):
         boardCopy.heuristic = calculateHeuristic(boardCopy)
         frontier.append(boardCopy)
 
+
 def finished(board):
     bridges = 0
     weight = 0
@@ -180,6 +194,7 @@ def finished(board):
         weight = island.weight
     return bridges == weight
 
+# The search function is the top level.
 def search(runs):
     global currentBoard
     for i in range(runs):
@@ -195,8 +210,8 @@ def search(runs):
 
 initialize()
 calculateValues(frontier[0])
-# printIslands(frontier[0])
+# frontier[0].printIslands()
 search(1)
-# printIslands(frontier[0])
+# frontier[0].printIslands()
 # print(frontier[0].heuristic)
 
