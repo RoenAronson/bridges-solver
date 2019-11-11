@@ -1,12 +1,21 @@
 from Node import node
 
+# A problem is a pre-set of islands.
+# Each island needs a certain number of connections.
+
 
 class problem:
-    boardSize = 0
+
+
+
     islands = []
+    boardSize = 0
+
     def __init__(self, islands, boardSize):
         self.boardSize = boardSize
         self.islands = islands
+
+
 
 
 a = node(1, [0, 0], 2)
@@ -24,3 +33,4 @@ l = node(1, [6, 4], 1)
 m = node(1, [6, 6], 2)
 
 problem1 = problem([a,b,c,d,e,f,g,h,i,j,k,l,m], 7)
+
