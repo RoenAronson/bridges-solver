@@ -26,15 +26,15 @@ class node:
     weight = 0
     # For bridges, bridges is the value
     bridges = 0
-    location = []
-    isFull = False
+    location = []  # Column, row of the node
+    isFull = False  #
 
     def __init__ (self, newType, location = [], weight = 0):
 
         # First, check to make sure the type is valid.
         if newType not in [-1, 0, 1]:
             print("Type is not valid on", location)
-            break
+            return
 
         # If valid, set the 'type' of node
         self.family = newType
