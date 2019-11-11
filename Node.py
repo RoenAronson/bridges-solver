@@ -18,6 +18,7 @@ class node:
     # connections. (NOTE: If any island is connected TWICE, then it will be in
     # the connected islands list TWICE).
 
+
     adjacentIslands = set()
     connectedIslands = []
     connectedBridges = 0
@@ -27,6 +28,7 @@ class node:
     # For bridges, bridges is the value
     bridges = 0
     location = []     # List of the node's coordinates (column, row)
+
 
     def __init__ (self, newType, location = [], weight = 0):
 
