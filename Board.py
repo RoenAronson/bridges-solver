@@ -32,5 +32,5 @@ class board:
         self.grid = initGrid.copy()
 
     def printIslands(self):
-        for island in islands:
+        for island in self.islands:
             print(island.location, island.weight - island.connectedBridges )
