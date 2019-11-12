@@ -5,6 +5,8 @@ class board:
     grid = []
     islands = set()
     heuristic = 0
+    bridgesConnected = 0
+    bridgesToConnect = 0
     def __init__ (self, size, iteration, heuristic):
         initGrid = []
         self.heuristic = heuristic

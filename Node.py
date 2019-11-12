@@ -3,8 +3,7 @@ class node:
     # A node is a gridsquare that keeps track of many of the
     # necessary properties of the puzzle
     types = [-1, 0, 1]
-    connectedIslands = set()
-    adjacentIslands = set()
+    connectedIslands = []
     connectedBridges = 0
     # For islands, weight is the value
     weight = 0
@@ -12,9 +11,10 @@ class node:
     bridges = 0
     family = -1
     location = []
-    def __init__ (self, newType, location = [], weight = 0):
+    def __init__ (self, newType, location = [], weight = 0, connectedBridges = 0):
         self.location = location
         self.family = newType
+        self.connectedBridges = connectedBridges
         if newType not in self.types:
             print("Type is not valid on", location)
         # Node is an island
