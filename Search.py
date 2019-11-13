@@ -241,12 +241,13 @@ def search(runs):
             currentBoard = frontier[0]
             printIslands(currentBoard)
 
+
 initialize()
 lastBoard = frontier[0]
 finished = False
 calculateValues(currentBoard)
 currentBoard.heuristic = calculateHeuristic(currentBoard)
-search(1000)
+search(10000)
 # printIslands(currentBoard)
 
 
