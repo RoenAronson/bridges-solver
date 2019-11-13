@@ -229,14 +229,12 @@ def checkFinished(board):
 def search(runs):
     global lastBoard
     global currentBoard
-
+    steps = 0
     for i in range(runs):
         if checkFinished(frontier[0]):
-            print("Finished!")
+            print("Finished with ", i, "steps!")
             break
         else:
-            if (i % 10) == 0:
-                print("Still working!")
             makeChildren(frontier[0])
             lastBoard = frontier.pop(0)
             frontier.sort(key=lambda x: x.heuristic)
@@ -248,7 +246,6 @@ lastBoard = frontier[0]
 finished = False
 calculateValues(currentBoard)
 currentBoard.heuristic = calculateHeuristic(currentBoard)
-print(currentBoard.heuristic)
 search(1000)
 # printIslands(currentBoard)
 
