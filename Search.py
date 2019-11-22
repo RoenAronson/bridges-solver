@@ -40,11 +40,6 @@ def initialize():
 
     # Update the frontier and visited list with a DEEPCOPY of the board
 
-    # !!! NOTE !!!
-    # I believe there should be some check done so we don't try generating children
-    # from a board-state that has already been visited. Right now, the initial state
-    # is in BOTH the frontier and visited list. (nkfoss)
-
     currentBoard = copy.deepcopy(initialBoard)
     frontier.append(currentBoard)
     visited.append(currentBoard)
@@ -69,18 +64,9 @@ def calculateValues(board):
 # Take a list of islands, copy each island to a list, and then return the list.
 def copyNodes(islands):
 
-# !!! NOTE !!!
-
-# I think this function is redundant...
-# makeChildren(board) does this...
-# > boardCopy = copy.deepcopy(board)
-# > boardCopy.islands = copyNodes(boardCopy.islands)
-
-# so, we are just reassigning a list of islands from one object to the same
-# object? Is that correct? (nkfoss)
-
     islandList = []
     for island in islands:
+        # Make a new node, with all important information
         a = node(1, island.location, island.weight, island.connectedBridges)
         a.bridges = island.bridges
         a.connectedIslands = island.connectedIslands
@@ -160,17 +146,27 @@ def checkCol(col, ax, bx, aLoc, bLoc, board):
 
 #==============================================================================#
 
+# This will find all islands adjacent to nodeA, regardless if they are blocked by a 
+# bridge. This is accounted for later on during...
 def populateAdjacent(nodeA, board):
     ax = nodeA.location[0]
     ay = nodeA.location[1]
     adjacents = []
     for x in range(ax-1,-1,-1):
         cCell = board.grid[x][ay]
+
+        # If you reach an island, and it still needs connections...
         if cCell.family == 1 and not cCell.checkFull():
+
+            # Check which island it is on the board's island list...
             for island in board.islands:
                 if cCell.location == island.location and not checkFullPair(cCell, island):
+
+                    # Add that island to the current island's adjacency list
                     adjacents.append(island)
             break
+
+
     for x in range(ax+1,problem.boardSize):
         cCell = board.grid[x][ay]
         if cCell.family == 1 and not cCell.checkFull():
@@ -178,6 +174,8 @@ def populateAdjacent(nodeA, board):
                 if cCell.location == island.location and not checkFullPair(cCell, island):
                     adjacents.append(island)
             break
+
+
     for y in range(ay-1,-1,-1):
         cCell = board.grid[ax][y]
         if cCell.family == 1 and not cCell.checkFull():
@@ -185,6 +183,8 @@ def populateAdjacent(nodeA, board):
                 if cCell.location == island.location and not checkFullPair(cCell, island):
                     adjacents.append(island)
             break
+
+
     for y in range(ay+1,problem.boardSize):
         cCell = board.grid[ax][y]
         if cCell.family == 1 and not cCell.checkFull():
@@ -196,18 +196,25 @@ def populateAdjacent(nodeA, board):
 
 #==============================================================================#
 
+# Take the nodes/board from connect().
 def checkAdjacent(nodeA, nodeB, board):
+
     aLoc = nodeA.location
     bLoc = nodeB.location
     ax = aLoc[0]
     ay = aLoc[1]
     bx = bLoc[0]
     by = bLoc[1]
-    # Same Column
+
+    # Now look between the islands to see if there are any islands IN THE WAY.
+    # If so, we cannot connect them.
+
+    # If nodes are in same Column
     if ax == bx:
         print("same column")
         return(checkRow(ax, ay, by, aLoc, bLoc, board))
-    # Same Row
+
+    # If nodes are in same row
     if ay == by:
         print("same row")
         return(checkCol(ay, ax, bx, aLoc, bLoc, board))
@@ -224,7 +231,11 @@ def checkFullPair(nodeA, nodeB):
 #==============================================================================#
 
 def connect(nodeA, nodeB, board):
+
+    # This will either return a list of nodes to be made into bridges,
+    # or it returns false.
     toBeBridges = checkAdjacent(nodeA, nodeB, board)
+
     full = checkFullPair(nodeA, nodeB)
     if toBeBridges and not full:
         # Actually connect
@@ -232,6 +243,8 @@ def connect(nodeA, nodeB, board):
             if (cell.bridges < 2 and cell.bridges >= 0) and not cell.family == 1:
                 cell.family = 0
                 cell.bridges = cell.bridges + 1
+        
+        # Now update each island's connected bridges and islands
         nodeA.connectedBridges = nodeA.connectedBridges + 1
         nodeB.connectedBridges = nodeB.connectedBridges + 1
         nodeA.connectedIslands.append(nodeB.location)
@@ -239,27 +252,39 @@ def connect(nodeA, nodeB, board):
 
 #==============================================================================#
 
+
 def calculateHeuristic(board):
     totalBridges = 0
+
+    # Go through each island on current board and sum up the connected bridges
+    # so far. Then substract that from totalValues and return.
+
     for island in board.islands:
         totalBridges = totalBridges + island.connectedBridges
     return (totalValues - totalBridges)
 
 #==============================================================================#
 
-# Generate possible moves given a boardstate
+# Generate all possible moves given a boardstate
 # This means only adjacent nodes that aren't full
 def generateMoves(board):
+
     global movesTotal
     moves = set()
     adj = []
+
     for island in board.islands:
+
+        # Find all adjacent islands (regardless if blocked by bridge)
         adj = (populateAdjacent(island, board))
         print(len(adj))
+
         for x in adj:
+            # if the current islands and adjacent island still have connections to make..
             if not checkFullPair(island, x):
-                a = (island,x)
-                moves.add((frozenset(a)))
+                pair = (island, x)
+                moves.add((frozenset(pair)))
+
     print("Number of moves:", len(moves))
     movesTotal = len(moves)
     return moves
@@ -268,29 +293,46 @@ def generateMoves(board):
 
 def makeChildren(board):
     global finished
+
+
     for move in (generateMoves(board)):
         boardCopy = copy.deepcopy(board)
-        boardCopy.islands = copyNodes(boardCopy.islands) # Is this redundant...?
-        mList = list(move)
-        a = mList.pop()
-        b = mList.pop()
+
+        # This needs to be done since deepcopy DOES NOT copy the island we need
+        boardCopy.islands = copyNodes(boardCopy.islands)
+
+        # Grab the nodes to connect for the move
+        movePair = list(move)
+        a = movePair.pop()
+        b = movePair.pop()
+
+        # The islands from the move get changed into the islands from the new board
         for island in boardCopy.islands:
             if island.location == a.location:
                 a = island
             if island.location ==  b.location:
                 b = island
+
+        # Finally, connect them
         connect(a, b, boardCopy)
+
         print(a.location, b.location)
+
+        # Once all possible moves are generated, we're done with the current board
         visited.append(board)
+
         # Fill fields of new board
         boardCopy.bridgesToConnect = calculateHeuristic(boardCopy)
         boardCopy.bridgesConnected = boardCopy.bridgesConnected + 1
         boardCopy.heuristic = boardCopy.bridgesConnected + boardCopy.bridgesToConnect
 
         # Add new board to the frontier if it has not already been explored.
+        # This is important for A-star.
         x = compareBoards(boardCopy, visited)
+        y = compareBoards(boardCopy, frontier)
 
-        if not x:
+        # If the board state has NOT been visited, put on frontier
+        if not (x or y):
             frontier.append(boardCopy)
 
 #==============================================================================#
@@ -308,17 +350,29 @@ def checkFinished(board):
 def search(runs):
     global lastBoard
     global currentBoard
+
+    # For use with A-star
     steps = 0
+
+    # For each run...
     for i in range(runs):
+
+        # Check if it's done
         if checkFinished(frontier[0]):
             print("Finished with ", i, "steps!")
             break
+
         else:
             makeChildren(frontier[0])
+
+            # Delete this when done (debug)
             lastBoard = frontier.pop(0)
+
+            # Sort the frontier by board state heuristic
             frontier.sort(key=lambda x: x.heuristic)
             currentBoard = frontier[0]
             printIslands(currentBoard)
+
 
 #==============================================================================#
 #======  Running the Search  ==================================================#
@@ -329,11 +383,27 @@ lastBoard = frontier[0]
 finished = False
 calculateValues(currentBoard)
 currentBoard.heuristic = calculateHeuristic(currentBoard)
-search(100)
-# printIslands(currentBoard)
+search(1)
+
+def printSolution(board):
+    for y in range(problem.boardSize):
+        toBePrinted = ''
+        for x in range(problem.boardSize):
+            toBe = board.grid[x][y]
+            if toBe.bridges == 1:
+                printChar = 'x'
+            elif toBe.bridges == 2:
+                printChar = 'X'
+            elif toBe.family == 1:
+                printChar = str(toBe.weight)
+            else: 
+                printChar = ' '
+            toBePrinted = toBePrinted + printChar + ' '
+        print(toBePrinted)
+        print('\n')
+
+printSolution(frontier[0])
+print(frontier[0].grid[0][0].connectedIslands)
+    
 
 
-for x in frontier[0].islands:
-    for y in frontier[1].islands:
-        if x == y:
-            print(x.location, y.location)

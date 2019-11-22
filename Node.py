@@ -17,7 +17,7 @@ class node:
     # required to complete the island. Empty and bridge nodes have weight = 0.
     weight = 0
 
-    # This is the number of bridges in the node (doesn't need to be an island)
+    # This is the number of bridges in the node (only if the node is a bridge)
     bridges = 0
 
     def __init__ (self, newType, location = [], weight = 0, connectedBridges = 0):

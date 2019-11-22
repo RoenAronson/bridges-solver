@@ -1,0 +1,7 @@
+When we there's an illegal board state (aka 1--1)...
+    We need this to not happen.
+        Connected islands can help us with this (or...?)
+
+        However, connected islands is not being updated right for each node. This is apparent on the very first move.
+
+    
