@@ -39,3 +39,16 @@ class board:
             for j in range(0, size):
                 initGrid[i].append(node(-1,[i,j]))
         self.grid = initGrid.copy()
+
+    def printConnected(self):
+        for island in self.islands:
+            island.printConnected()
+
+    def printConnectedALL(self):
+        for column in self.grid:
+            for cell in column:
+                print(cell.location, " connected:")
+                cell.printConnected()
+
+    def getHeuristic(self):
+        return self.heuristic

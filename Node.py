@@ -47,3 +47,9 @@ class node:
     def checkFull(self):
         # Returns True if full
         return((self.weight - self.connectedBridges) <= 0)
+
+    def printConnected(self):
+        print("Current island: ", self.location)
+        for island in self.connectedIslands:
+            print(island, " loc")
+
