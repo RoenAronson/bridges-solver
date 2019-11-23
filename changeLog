@@ -1,7 +1,40 @@
+11/21/19
+
 When we there's an illegal board state (aka 1--1)...
     We need this to not happen.
         Connected islands can help us with this (or...?)
 
         However, connected islands is not being updated right for each node. This is apparent on the very first move.
 
-    
+#--------------------------------------------------------------------------------------------------------------------#
+11/22/19
+
+There is a problem with connected islands, where WAY too many islands are being put into a connected islands list.
+This is happening in connect. Here is a debug print statement from the first call.
+
+==========================================
+connecting:  [6, 6]  and  [6, 4]
+same column
+NodeA before: []
+NodeB before: []
+NodeA connected: [[6, 4], [6, 6]]
+NodeB connected: [[6, 4], [6, 6]]
+[6, 6] [6, 4]
+=======================================================
+
+Somehow, they ended up in eachother's connected islands lists. Worse yet, it's not just these two nodes that get into
+eachother's connected list, but EVERY OTHER NODE (not just islands) on the board has these in their connected island list.
+
+This happens again in the second call to connect, but it gets worse, as more islands get added.
+==========================================
+connecting:  [0, 6]  and  [6, 6]
+same row
+NodeA before: [[6, 4], [6, 6]]
+NodeB before: [[6, 4], [6, 6]]
+NodeA connected: [[6, 4], [6, 6], [6, 6], [0, 6]]
+NodeB connected: [[6, 4], [6, 6], [6, 6], [0, 6]]
+[0, 6] [6, 6]
+=======================================================
+
+#--------------------------------------------------------------------------------------------------------------------#
+

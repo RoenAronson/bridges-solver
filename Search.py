@@ -39,7 +39,6 @@ def initialize():
         initialBoard.islands.add(island)
 
     # Update the frontier and visited list with a DEEPCOPY of the board
-
     currentBoard = copy.deepcopy(initialBoard)
     frontier.append(currentBoard)
     visited.append(currentBoard)
@@ -63,12 +62,23 @@ def calculateValues(board):
 
 # Take a list of islands, copy each island to a list, and then return the list.
 def copyNodes(islands):
+    #print("=======================================================") # delete
+    #print("Entering copyNodes")# delete
+    #prompt = "T"  # Delete this (debug)
 
     islandList = []
     for island in islands:
         # Make a new node, with all important information
         a = node(1, island.location, island.weight, island.connectedBridges)
         a.bridges = island.bridges
+
+        #if prompt != "f": # delete
+         #   print("a:", a.location) # delete
+          #  prompt = input("^ here is a's connected islands") # delete
+        #if prompt != "f":  # delete
+         #   print("island: ", island.location) # delete
+          #  prompt = input("^ here is island's connected islands") # delete
+
         a.connectedIslands = island.connectedIslands
         islandList.append(a)
     return islandList
@@ -232,6 +242,10 @@ def checkFullPair(nodeA, nodeB):
 
 def connect(nodeA, nodeB, board):
 
+    # Delete this
+    # print("==========================================")
+    # print("connecting: ", nodeA.location, " and ", nodeB.location)
+
     # This will either return a list of nodes to be made into bridges,
     # or it returns false.
     toBeBridges = checkAdjacent(nodeA, nodeB, board)
@@ -245,10 +259,15 @@ def connect(nodeA, nodeB, board):
                 cell.bridges = cell.bridges + 1
         
         # Now update each island's connected bridges and islands
+        #print("NodeA before:", nodeA.connectedIslands) # delete
+        #print("NodeB before:", nodeB.connectedIslands) # delete
         nodeA.connectedBridges = nodeA.connectedBridges + 1
         nodeB.connectedBridges = nodeB.connectedBridges + 1
         nodeA.connectedIslands.append(nodeB.location)
         nodeB.connectedIslands.append(nodeA.location)
+        #print("NodeA connected:", nodeA.connectedIslands) # delete
+        #print("NodeB connected:", nodeB.connectedIslands) # delete
+
 
 #==============================================================================#
 
@@ -277,7 +296,6 @@ def generateMoves(board):
 
         # Find all adjacent islands (regardless if blocked by bridge)
         adj = (populateAdjacent(island, board))
-        print(len(adj))
 
         for x in adj:
             # if the current islands and adjacent island still have connections to make..
@@ -298,8 +316,12 @@ def makeChildren(board):
     for move in (generateMoves(board)):
         boardCopy = copy.deepcopy(board)
 
+
         # This needs to be done since deepcopy DOES NOT copy the island we need
         boardCopy.islands = copyNodes(boardCopy.islands)
+
+        #print("Here we go") # delete
+        #boardCopy.islands[0].printConnected() # delete
 
         # Grab the nodes to connect for the move
         movePair = list(move)
@@ -316,7 +338,7 @@ def makeChildren(board):
         # Finally, connect them
         connect(a, b, boardCopy)
 
-        print(a.location, b.location)
+        # boardCopy.printConnectedALL() # Delete this (debug)
 
         # Once all possible moves are generated, we're done with the current board
         visited.append(board)
@@ -373,17 +395,7 @@ def search(runs):
             currentBoard = frontier[0]
             printIslands(currentBoard)
 
-
-#==============================================================================#
-#======  Running the Search  ==================================================#
-#==============================================================================#
-
-initialize()
-lastBoard = frontier[0]
-finished = False
-calculateValues(currentBoard)
-currentBoard.heuristic = calculateHeuristic(currentBoard)
-search(1)
+    printSolution(frontier[0])
 
 def printSolution(board):
     for y in range(problem.boardSize):
@@ -396,14 +408,26 @@ def printSolution(board):
                 printChar = 'X'
             elif toBe.family == 1:
                 printChar = str(toBe.weight)
-            else: 
+            else:
                 printChar = ' '
             toBePrinted = toBePrinted + printChar + ' '
         print(toBePrinted)
-        print('\n')
 
-printSolution(frontier[0])
-print(frontier[0].grid[0][0].connectedIslands)
+
+#==============================================================================#
+#======  Running the Search  ==================================================#
+#==============================================================================#
+
+initialize()
+lastBoard = frontier[0]
+finished = False
+calculateValues(currentBoard)
+currentBoard.heuristic = calculateHeuristic(currentBoard)
+search(1)
+
+
+
+
     
 
 
