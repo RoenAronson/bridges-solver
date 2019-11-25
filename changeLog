@@ -1,12 +1,27 @@
-11/21/19
+11/24/19
 
-When we there's an illegal board state (aka 1--1)...
-    We need this to not happen.
-        Connected islands can help us with this (or...?)
+Left on boardIsVisited()
 
-        However, connected islands is not being updated right for each node. This is apparent on the very first move.
+---------------------------------------------------------------------
 
-#--------------------------------------------------------------------------------------------------------------------#
+11/23/19
+
+In an attempt to solve the multiple connected islands problem, connect (and it's associated sub-functions) are
+now functions of the board class. This also freed up some space in Search.py. 
+
+No luck though.
+
+Currently moving generate moves and populate adjacent into the board...
+- Generate moves:
+    What's the significance of moves total? We import it as a global, then reassign it to be the length of the moves set.
+    Can't this be done later? I'm assuming this is not important right now, and I can move this function into the board class.
+- Populate Adjacent:
+    This is within generateMoves()
+
+
+
+#-------------------------------------------------------------------------------------------------------------#
+
 11/22/19
 
 There is a problem with connected islands, where WAY too many islands are being put into a connected islands list.
@@ -37,4 +52,15 @@ NodeB connected: [[6, 4], [6, 6], [6, 6], [0, 6]]
 =======================================================
 
 #--------------------------------------------------------------------------------------------------------------------#
+
+11/21/19
+
+When we there's an illegal board state (aka 1--1)...
+    We need this to not happen.
+        Connected islands can help us with this (or...?)
+
+        However, connected islands is not being updated right for each node. This is apparent on the very first move.
+
+#--------------------------------------------------------------------------------------------------------------------#
+
 

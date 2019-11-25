@@ -3,6 +3,9 @@ class node:
     # A node is a gridsquare that keeps track of many of the
     # necessary properties of the puzzle.
 
+    # For reference in the hashmap. Islands only.
+    name = ""
+
     # It has a set of x,y coordinates describing it's location on the board
     location = []
 
@@ -20,10 +23,11 @@ class node:
     # This is the number of bridges in the node (only if the node is a bridge)
     bridges = 0
 
-    def __init__ (self, newType, location = [], weight = 0, connectedBridges = 0):
+    def __init__ (self, newType, location = [], weight = 0, connectedBridges = 0, name = ''):
         self.location = location
         self.family = newType
         self.connectedBridges = connectedBridges
+        self.name = name
 
         if newType not in [-1, 0, 1]:
             print("Type is not valid on", location)
@@ -36,7 +40,7 @@ class node:
         # If the node is a bridge...
         if type == 0:
             self.family = 0
-            self.typeString = "bridge"
+            self.typeString = "bridge"       
 
         # If node is an island, set the weight
         if self.family == 1:
@@ -52,4 +56,6 @@ class node:
         print("Current island: ", self.location)
         for island in self.connectedIslands:
             print(island, " loc")
+
+
 
