@@ -40,7 +40,7 @@ def initialize():
 
     # Now calculate the heuristic of the frontier
     #   by passing in the number of steps taken so far (0) to the heuristic fxn.
-    initialBoard.calculateHeuristic(steps)
+    initialBoard.calculateHeuristic(0)
 
     # Append the initialBoard to the frontier
     frontier.append(initialBoard)
