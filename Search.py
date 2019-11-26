@@ -61,12 +61,12 @@ def search(runs):
         # Set the currentboard to the first in the frontier, then remove it.
         # This SHOULD be the board with the best heuristic.
         currentBoard = frontier[0]
-        currentBoard.stepsSoFar = i
         frontier.remove(currentBoard)
 
         # Check to see if the current board is the solution.
         if currentBoard.isFinished():
             print("Finished with ", i, "steps!")
+            printPath(currentBoard)
             break
 
         else:
@@ -203,12 +203,25 @@ def printBoards(boardList):
         board.printSolution()
         print("=============================")
 
+#==================================================================#
+
+def printPath(board):
+    input("hit enter to print board path")
+    print("=============")
+    board.printSolution()
+
+    nextParent = board.parent
+    while nextParent != None:
+        print("================")
+        nextParent.printSolution()
+        nextParent = nextParent.parent
+
 #==============================================================================#
 #======  Running the Search  ==================================================#
 #==============================================================================#
 
 initialize()
-search(1000)
+search(10)
 
 
     

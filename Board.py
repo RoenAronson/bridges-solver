@@ -93,10 +93,8 @@ class board:
 # Also count the number of incomplete islands, and add that to the total
 
     def calculateHeuristic(self, steps):
-    
-        self.stepsSoFar = steps
 
-        self.heuristic = (self.bridgesRequired - self.bridgesConnected) - self.countComplete()/2
+        self.heuristic = (self.bridgesRequired - self.bridgesConnected) + self.stepsSoFar
         
 #================================================================================================#
 
@@ -190,13 +188,14 @@ class board:
             # nodeA.connectedBridges = nodeA.connectedBridges + 1
             # nodeB.connectedBridges = nodeB.connectedBridges + 1
             self.updateConnected(nodeA, nodeB)
-            self.bridgesConnected = self.bridgesConnected + 1
+            self.bridgesConnected = self.bridgesConnected + 2
 
             # However, if the connection completed both islands, we need to see if it's an illegal state.
             if ( self.checkFullIsland(nodeA.name) and self.checkFullIsland(nodeB.name) ):
-                if self.checkIllegalState(nodeA) == True:
+                penaltyStatus = self.checkIllegalState(nodeA)
+                if penaltyStatus == True:
                     penalty = 100
-                elif self.checkIllegalState(nodeA) == 'complete':
+                elif penaltyStatus == 'complete':
                     penalty = -100
 
         return penalty
@@ -217,6 +216,11 @@ class board:
 #===================================================================================================#
 
     def checkIllegalState(self, nodeA):
+
+        if self.isFinished():
+            input("we found the complete state")
+            return 'complete'
+
 
         toCheck = []
         connectedSequence = []
@@ -421,7 +425,7 @@ class board:
         newBoard.islands = copy.deepcopy(self.islands)
         newBoard.bridgesConnected = copy.deepcopy(self.bridgesConnected)
         newBoard.bridgesRequired = copy.deepcopy(self.bridgesRequired)
-        newBoard.stepsSoFar = copy.copy(self.stepsSoFar)
+        newBoard.stepsSoFar = self.stepsSoFar + 1
         newBoard.heuristic = copy.copy(self.heuristic)
         newBoard.parent = self
         return newBoard
