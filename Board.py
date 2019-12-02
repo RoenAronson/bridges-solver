@@ -54,24 +54,19 @@ class board:
                 initGrid[i].append(node(-1,[i,j]))
         self.grid = initGrid.copy()
 
-    def printConnected(self):
-        for island in self.islands:
-            island.printConnected()
-
-    def printConnectedALL(self):
-        for column in self.grid:
-            for cell in column:
-                print(cell.location, " connected:")
-                cell.printConnected()
 #==============================================================================================#    
 
+# Take a problem space, and populate the board with the required islands.
     def fromProblem(self, problem):
         
         for island in problem.islands: # Copy islands for the problem
             
+            # Copy island to appropriate grid location.
             x = island.location[0]
             y = island.location[1]
             self.grid[x][y] = island
+
+        
             self.islands.append(island)
             self.connectedIslands.update( 
                 {
