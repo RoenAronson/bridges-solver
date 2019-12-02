@@ -8,6 +8,10 @@ class board:
     # If we connect two islands, this creates an entirely different 'board' than
     # the initial state.
 
+#==============================================================================#
+#======  Fields  ==============================================================#
+#==============================================================================#
+
     # A board knows which islands are connected to eachother
     connectedIslands = {}
 
@@ -36,6 +40,9 @@ class board:
     bridgesRequired = 0
     heuristic = 0
 
+#=============================================================================#
+#=======  Methods  ===========================================================#
+#=============================================================================#
 
     # When constructing a board, we need to know the number of columns and rows
     # to create the grid (size), and we need to have some kind of heuristic to
@@ -56,8 +63,11 @@ class board:
 
 #==============================================================================================#    
 
-# Take a problem space, and populate the board with the required islands.
+# Take a problem space, and populate the board with the problem islands.
+
     def fromProblem(self, problem):
+
+        self.bridgesRequired = problem.countBridgesRequired() # Get total bridges required
         
         for island in problem.islands: # Copy islands for the problem
             
@@ -66,8 +76,11 @@ class board:
             y = island.location[1]
             self.grid[x][y] = island
 
-        
+
             self.islands.append(island)
+
+            # Open the board's hash map, and look up the entry corresponding to the island's name.
+            # Then update it with the required info.
             self.connectedIslands.update( 
                 {
                     island.name: {
@@ -78,16 +91,12 @@ class board:
                 }
                 )
         
-        
-        self.bridgesRequired = problem.getTotalWeight() # Get total bridges required
-
-
 #==============================================================================================#
 
 # Set stepsSoFar and count the number of bridges. 
 # Also count the number of incomplete islands, and add that to the total
 
-    def calculateHeuristic(self, steps):
+    def calculateHeuristic(self):
 
         self.heuristic = (self.bridgesRequired - self.bridgesConnected) + self.stepsSoFar
         
@@ -115,11 +124,6 @@ class board:
         for island in self.islands:
             count += island.connectedBridges
         return count
-
-#==================================================================================================#
-
-    def getHeuristic(self):
-        return self.heuristic
 
 #================================================================================================#
 
