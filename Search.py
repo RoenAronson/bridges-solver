@@ -30,22 +30,20 @@ visited = []
 # state as defined by the problem.
 def initialize():
 
-    # Make the first board-state, with the appropriate size and heuristic = 0
+    # Make the first board-state, with the appropriate size (and heuristic = 0).
     initialBoard = board(problem.boardSize, 0)
 
-    # For each island in the problem, set the board's grid to be that island at
-    # the appropriate location, and add that island to the board's island list.
-    # The board also learns how many bridges are required total.
+    # Populate the board fields with the islands from the problem.
     initialBoard.fromProblem(problem)
 
-    # Now calculate the heuristic of the frontier
+    # Now calculate the heuristic of the initial board
     #   by passing in the number of steps taken so far (0) to the heuristic fxn.
-    initialBoard.calculateHeuristic(0)
+    initialBoard.calculateHeuristic()
 
     # Append the initialBoard to the frontier
     frontier.append(initialBoard)
 
-    #=======================================================================#
+#=============================================================================#
 
 def search(runs):
 
@@ -53,7 +51,6 @@ def search(runs):
     global frontier
 
     # For each run...
-
     for i in range(runs):
 
         print("Run number: ", i)
