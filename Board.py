@@ -12,20 +12,18 @@ class board:
 #======  Fields  ==============================================================#
 #==============================================================================#
 
-    # A board knows which islands are connected to eachother
-    connectedIslands = {}
+    # A board knows about the islands, their names,
+    # number of required bridges, and their current connections.
+    islandMap = {}
 
     # A board knows about the state it came from
     parent = None
 
     # The board has a grid (which becomes a list of lists) representing the
-    # the locations of empty nodes/bridges/islands on the board.
+    # the locations of all nodes (empty, bridge, or island)
     grid = []
 
-    # It also has a set of unique islands on that board.
-    islands = []
-
-    # It also has a set moves that are possible from this boardstate
+    # A set moves that are possible from this boardstate
     moves = set()
 
     # The heuristic is the most important aspect of the board. Certain boards are
@@ -76,12 +74,9 @@ class board:
             y = island.location[1]
             self.grid[x][y] = island
 
-
-            self.islands.append(island)
-
             # Open the board's hash map, and look up the entry corresponding to the island's name.
             # Then update it with the required info.
-            self.connectedIslands.update( 
+            self.islandMap.update( 
                 {
                     island.name: {
                     'location': island.location,
@@ -107,7 +102,7 @@ class board:
 
     def countComplete(self):
         count = 0
-        dic = self.connectedIslands
+        dic = self.islandMap
         for key in dic.keys():
             numConnects = len( dic.get(key).get('connections') )
             weight = dic.get(key).get('weight')
@@ -121,7 +116,7 @@ class board:
 
     def countBridges(self):
         count = 0
-        for island in self.islands:
+        for island in self.islandMap:
             count += island.connectedBridges
         return count
 
@@ -131,7 +126,7 @@ class board:
     # their weights are equal to length of their connection list. 
     # If either are equal, return true.
     def checkFullIsland(self, name):
-        entry = self.connectedIslands.get(name)
+        entry = self.islandMap.get(name)
         if entry.get('weight') == len(entry.get('connections')):
             return True
 
@@ -143,11 +138,11 @@ class board:
     # their weights are equal to length of their connection list. 
     # If either are equal, return true.
     def checkFullPair(self, nameA, nameB):
-        entry = self.connectedIslands.get(nameA)
+        entry = self.islandMap.get(nameA)
         if entry.get('weight') == len(entry.get('connections')):
             return True
 
-        entry = self.connectedIslands.get(nameB)
+        entry = self.islandMap.get(nameB)
         if entry.get('weight') == len(entry.get('connections')):
             return True
 
@@ -158,7 +153,7 @@ class board:
     def checkFullConnection(self, nodeA, nodeB):
         nameA = nodeA.name
         nameB = nodeB.name
-        dic = self.connectedIslands
+        dic = self.islandMap
         entry = [nodeB.location, nameB]
         if dic.get(nameA).get('connections').count(entry) == 2:
             return True
@@ -206,9 +201,9 @@ class board:
 
     def updateConnected(self, nodeA, nodeB):
         nodeA.connectedBridges += 1
-        self.connectedIslands.get(nodeA.name).get('connections').append( list([nodeB.location, nodeB.name]) )
+        self.islandMap.get(nodeA.name).get('connections').append( list([nodeB.location, nodeB.name]) )
         nodeB.connectedBridges += 1
-        self.connectedIslands.get(nodeB.name).get('connections').append( list([nodeA.location, nodeA.name]) )
+        self.islandMap.get(nodeB.name).get('connections').append( list([nodeA.location, nodeA.name]) )
     
 
 
@@ -229,7 +224,7 @@ class board:
         while len(toCheck) > 0:
 
             nodeToCheck = toCheck[0] # put first node on the queue
-            connections = self.connectedIslands.get(nodeToCheck).get('connections') # list of node name/location pairs
+            connections = self.islandMap.get(nodeToCheck).get('connections') # list of node name/location pairs
 
             for i in range(0, len(connections)):
                 connectionName = (connections[i][1])   # 'a' or 'j', etc.
@@ -323,13 +318,13 @@ class board:
 #==============================================================================#
 
     # Generate all possible moves given a boardstate
-    # This means only adjacent nodes that aren't full
     def generateMoves(self):
 
         adjacentIslands = []
         self.moves = set()
 
-        for curr_island in self.islands:
+        # For every island that is NOT full (as determined by the hashmap)
+        for curr_island in self.islandMap:
             if not self.checkFullIsland(curr_island.name):
 
                 # Find all adjacent islands (regardless if blocked by bridge)
@@ -407,8 +402,8 @@ class board:
 #==============================================================================#
 
     def dic(self):
-        for entry in self.connectedIslands:
-            print (self.connectedIslands.get(entry))
+        for entry in self.islandMap:
+            print (self.islandMap.get(entry))
 
 #===============================================================================#
 
@@ -419,7 +414,7 @@ class board:
 
     def copyFromCurrent(self):
         newBoard = board(len(self.grid), 0)
-        newBoard.connectedIslands = copy.deepcopy(self.connectedIslands)
+        newBoard.islandMap = copy.deepcopy(self.islandMap)
         newBoard.grid = copy.deepcopy(self.grid)
         newBoard.islands = copy.deepcopy(self.islands)
         newBoard.bridgesConnected = copy.deepcopy(self.bridgesConnected)
