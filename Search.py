@@ -1,6 +1,7 @@
-from Board import board
+from Board import *
 from Problem import problem1, problem2
 from Node import *
+from Search import switch
 import copy
 
 # This is the main search function. When the original boardstate is initialized,
@@ -35,6 +36,9 @@ def initialize():
 
     # Populate the board fields with the islands from the problem.
     initialBoard.fromProblem(problem)
+
+    # Populate the board's possible moves. This is needed for the heuristic calculation.
+    initialBoard.generateMoves()
 
     # Now calculate the heuristic of the initial board
     #   by passing in the number of steps taken so far (0) to the heuristic fxn.
@@ -85,76 +89,76 @@ def makeChildren(board):
     global frontier
     global visited
 
-    # Populate the board's possible moves
-    board.generateMoves()
-
     toBeAdded = []
     for move in board.moves:
 
         # This needs to be done since deepcopy DOES NOT behave correctly
         boardCopy = board.copyFromCurrent()
-        boardCopy.islands = copyNodes(boardCopy)
 
-        # Grab the nodes from the move
-        moveList = list(move)
-        nodeA = moveList.pop()
-        nodeB = moveList.pop()
+        # Grab the names of the islands in the move.
+        nameList = list(move)
+        nameA = nameList.pop()
+        nameB = nameList.pop()
 
-        # Check to see if these nodes can actually be connected
-        if board.checkFullConnection(nodeA, nodeB):
+        # Check to see if these nodes can actually be connected.
+        if board.checkFullConnection(nameA, nameB):
             continue
 
         # Finally, connect them. 
         # However, if this results in an illegal board state, then penalize.
         # If connection COMPLETES the puzzle, give it a good score.
-        penalty = boardCopy.connect(nodeA, nodeB) 
+        penalty = boardCopy.connect(nameA, nameB) 
 
         # If this is contained within visited, or frontier, do not append.
         if containsBoard(visited, boardCopy):
+            input('visited contains')
             continue
         if containsBoard(frontier, boardCopy):
+            input('frontier contains')
             continue
 
-        # Now calculate the copy's heuristic
-        boardCopy.calculateHeuristic(board.stepsSoFar)
+        # Now generate the copy's moves and heuristic
+        boardCopy.generateMoves()
+        boardCopy.calculateHeuristic()
         boardCopy.heuristic += penalty
 
         # Add to the list of states that will be added to the frontier.
         toBeAdded.append(boardCopy)
                 
     # Add new states, then remove duplicates.
+
     frontier = frontier + toBeAdded
     frontier = cleanFrontier(frontier)
 
 #==============================================================================#
 
 # Take a list of islands, copy each island to a list, and then return the list.
-def copyNodes(boardCopy):
+# def copyNodes(boardCopy):
 
-    islandList = []
-    for island in boardCopy.islands:
+#     islandList = []
+#     for island in boardCopy.islands:
 
-        # Make a new node, with all important information
-        a = copy.copy(island)
-        boardCopy.grid[island.location[0]][island.location[1]] = a
-        islandList.append(a)
+#         # Make a new node, with all important information
+#         a = copy.copy(island)
+#         boardCopy.grid[island.location[0]][island.location[1]] = a
+#         islandList.append(a)
     
-    return islandList
+#     return islandList
 
 #==============================================================================#
 
 # Check to see if the frontier or visited list contain a board
 def containsBoard(boardList, boardCopy):
 
-    for visitedBoard in boardList:
-        if boardCopy.getBridgeString() == visitedBoard.getBridgeString():
+    for board in boardList:
+        if boardCopy.getBridgeString() == board.getBridgeString():
             return True
     return False
 
 #==============================================================================#
 
 
-# Remove duplicates from frontier
+# Remove duplicates from frontier. DEBUG ONLY. 
 def cleanFrontier(frontier):
 
     indicesToRemove = []
@@ -182,12 +186,15 @@ def printSolution(board):
         toBePrinted = ''
         for x in range(problem.boardSize):
             toBe = board.grid[x][y]
-            if toBe.bridges == 1:
+            if toBe == 1:
                 printChar = 'o'
-            elif toBe.bridges == 2:
+            elif toBe == 2:
                 printChar = '0'
-            elif toBe.family == 1:
-                printChar = str(toBe.weight)
+            elif toBe == 'I':
+                location = [x,y]
+                name = board.getNameByLocation(location)
+                weight = board.islandMap.get(name).get('weight')
+                printChar = str(weight)
             else:
                 printChar = ' '
             toBePrinted = toBePrinted + printChar + ' '
@@ -214,11 +221,36 @@ def printPath(board):
         nextParent = nextParent.parent
 
 #==============================================================================#
+
+def QWE():
+    for board in frontier:
+        print(board.heuristic)
+
+def ASD():
+    print("##=== Printing frontier boards ===###")
+    for i in range(len(frontier)-1, -1, -1):
+        board = frontier[i]
+        print(board.heuristic)
+        print("----")
+        board.printSolution()
+        print("==================")
+    print("##=== end === ##")
+
+def ZXC():
+    print("##=== Printing visited boards ===###")
+    for board in visited:
+        print(board.heuristic)
+        print("----")
+        board.printSolution()
+        print("==================")
+    print("##=== end === ##")
+
+#==============================================================================#
 #======  Running the Search  ==================================================#
 #==============================================================================#
 
 initialize()
-search(10)
+search(0)
 
 
     
