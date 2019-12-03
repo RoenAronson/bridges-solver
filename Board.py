@@ -99,7 +99,7 @@ class board:
 
     def calculateHeuristic(self):
 
-        self.heuristic = len(self.moves) + (len(self.islandMap) - self.countComplete()) + (self.bridgesRequired - self.bridgesConnected)
+        self.heuristic = len(self.moves) + 2*(len(self.islandMap) - self.countComplete()) + 2*(self.bridgesRequired - self.bridgesConnected) + (1.1**self.stepsSoFar)
 
         
 #================================================================================================#
@@ -279,8 +279,6 @@ class board:
         ay = aLoc[1]
         bx = bLoc[0]
         by = bLoc[1]
-        print(nameA, self.getLocationByName(nameA))
-        print(nameB, self.getLocationByName(nameB))
 
         # If nodes are in same Column
         if ax == bx:
@@ -335,8 +333,6 @@ class board:
     # Generate all possible moves given a boardstate.
     # A move is defined a pair of island names (which are keys in the island map.)
     def generateMoves(self):
-
-        self.printSolution()
 
         self.moves = set()
 

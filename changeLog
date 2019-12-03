@@ -1,3 +1,28 @@
+12/2/19
+
+In the interest of developing a more interesting heuristic for the board, the calculateHeuristic function is now a sum
+of the number of moves possible from the board state, the number of incomplete islands, AND the number of bridges remaining.
+
+Problem: It may be helpful to include steps-so-far as a part of the heuristic. There are spot where the program makes a wrong move,
+and it's not figured out until way later. It starts reaching illegal board states, but then the next state in the frontier is also 
+going to result in an illegal state, since it descended from the same ancestor.
+
+It could easily be hundreds of runs before solving a given 'easy' puzzle without taking steps so far into account. Adding steps 
+so far as a penalty would ensure that we get back to the right configuration more quickly.
+
+Problem: Simply adding '1' to the penalty for every step doesn't have the desired effect (not soon enough anyway).
+    I tried multiplying it by '2', and got some similar results, though it was better... multiplying by 3 was overkill.
+    2.5 got rid of the dead ends quickly, but stifled progress beyond that. 2.1 was the same
+
+    Perhaps an expontentiation of the steps? I started with steps**1.1, and then realized that number of complete islands was
+    no longer having the intended effect. I decided to multiply that by 2. Sometimes I get done in about 20 steps or so, but  
+    sometimes it takes hundreds.
+
+    I'm going to try it the other way (1.1**steps). First try, finished in 19 steps. Then it took the wrong move and spun for more than 
+    1000 steps. There's gotta be a better heuristic that can back us out of these dead ends.
+
+----------------------------------------------------------------------------------
+
 11/24/19
 
 Left on boardIsVisited()

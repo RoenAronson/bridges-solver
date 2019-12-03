@@ -53,6 +53,7 @@ def search(runs):
 
     global currentBoard
     global frontier
+    global runsSoFar
 
     # For each run...
     for i in range(runs):
@@ -66,7 +67,7 @@ def search(runs):
 
         # Check to see if the current board is the solution.
         if currentBoard.isFinished():
-            print("Finished with ", i, "steps!")
+            print("Finished with ", len(visited), "steps!")
             printPath(currentBoard)
             break
 
@@ -111,10 +112,8 @@ def makeChildren(board):
 
         # If this is contained within visited, or frontier, do not append.
         if containsBoard(visited, boardCopy):
-            input('visited contains')
             continue
         if containsBoard(frontier, boardCopy):
-            input('frontier contains')
             continue
 
         # Now generate the copy's moves and heuristic
