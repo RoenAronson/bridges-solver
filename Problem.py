@@ -31,7 +31,7 @@ class problem:
         bridgesRequired = 0
         for island in self.islands:
             bridgesRequired += island.weight
-        return brdigesRequired/2
+        return bridgesRequired/2
 
 #=============================================================================#
 #=======  Instances  =========================================================#
